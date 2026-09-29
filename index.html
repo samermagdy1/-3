@@ -161,4 +161,18 @@ $('send').onclick=()=>go(1);$('dl').onclick=()=>go(0);
 build();
 (async()=>{try{DL=window.claude?await claude.use("downloads"):null}catch(e){}})();
 function fit(){const b=document.body;b.style.zoom="";if(matchMedia("(pointer:coarse)").matches&&screen.width<700&&innerWidth>screen.width*1.3)b.style.zoom=innerWidth/screen.width}fit();addEventListener("resize",fit);
-</script></body></html>
+</script>
+  <script>
+  (function () {
+  let footer = document.querySelector('footer');
+  if (!footer) {
+    footer = document.createElement('footer');
+    document.body.appendChild(footer);
+  }
+  footer.textContent = 'By Eng : Samir Magdy';
+  footer.style.cssText =
+    'text-align:center;padding:14px;margin-top:24px;' +
+    'font-family:Cairo,Tahoma,Arial,sans-serif;font-size:14px;' +
+    'color:#64748b;border-top:1px solid #e2e8f0;';
+})(); </script>
+</body></html>
