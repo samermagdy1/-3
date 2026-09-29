@@ -18,12 +18,12 @@ main{max-width:920px;margin:0 auto;padding:12px}
 section{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:14px 0}
 section h2{margin:0 0 10px;font-size:1.05rem;color:var(--pri);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 section h2 span{flex:1}
-.g{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.g.l{grid-template-columns:repeat(3,1fr)}
+.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.g>*{min-width:0}
+.g.l{grid-template-columns:repeat(3,minmax(0,1fr))}
 label{display:block;font-size:.85rem;font-weight:600;color:var(--mut)}
 input{width:100%;margin-top:3px;padding:10px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit;min-height:44px}
 input:focus{outline:2px solid var(--pri);border-color:transparent}.h{display:block;color:var(--dg);font-size:.75rem;font-weight:400}input.bad{border-color:var(--dg)}
-.dt{display:flex;align-items:center;gap:4px;margin-top:3px}.dt input{flex:1;width:auto;min-width:0;margin:0;text-align:center;padding:10px 4px}.dt input[data-p="2"]{flex:1.7}
+.dt{display:flex;align-items:center;gap:4px;margin-top:3px}.dt input{flex:1 1 0;width:0;min-width:0;margin:0;text-align:center;padding:10px 4px}.dt input[data-p="2"]{flex:1.7}
 .dt i{font-style:normal;font-weight:700;font-size:1.3rem;color:var(--mut)}.dt.bad input{border-color:var(--dg)}
 .dt .nl{display:none;flex:1;direction:rtl;text-align:center;padding:9px;border:1px dashed var(--bd);border-radius:9px;cursor:pointer}.dt.nil .nl{display:block}.dt.nil input,.dt.nil i{display:none}
 .w2{grid-column:1/-1}
@@ -39,7 +39,7 @@ button.s{font-size:.8rem;min-height:32px;padding:3px 10px}
 #fin div,#ask div{background:var(--card);border-radius:14px;padding:18px;max-width:440px;width:100%;display:grid;gap:10px}
 #fin p{margin:0;font-size:.9rem;color:var(--mut)}
 #toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:.9rem;opacity:0;transition:.3s;pointer-events:none;z-index:10}
-@media(max-width:640px){.g,.g.l{grid-template-columns:1fr}main{padding:8px}section{padding:12px}}
+@media(max-width:640px){.g,.g.l{grid-template-columns:minmax(0,1fr)}main{padding:8px}section{padding:12px}header h1{font-size:1.08rem}.foot button{font-size:.92rem;padding:6px 8px}}
 </style></head><body>
 <header><h1>وزارة الداخلية – وثيقة تعارف (نموذج رقم 3)</h1><p>الإدارة العامة لأمن الموانئ – قسم التصاريح</p></header>
 <main>
@@ -49,12 +49,11 @@ button.s{font-size:.8rem;min-height:32px;padding:3px 10px}
 <div style="text-align:center;margin:16px 0"><button class="d" id="clr">🗑 حذف كل البيانات المحفوظة (مستخدم جديد)</button></div>
 </main>
 <div class="foot"><button class="p" id="send">إرسال عبر واتساب</button><button id="dl">تحميل ملف Word</button></div>
-<div id="fin"><div><h2 style="margin:0;color:var(--pri)">✓ الملف جاهز للإرسال</h2>
-<p>الإرسال إلى واتساب على الرقم <bdi dir="ltr">01129724884</bdi> (<bdi dir="ltr">+20 112 972 4884</bdi>)</p>
-<button class="p" id="ws">① حفظ الملف / مشاركته</button>
-<a class="btn" id="wa" target="_blank" rel="noopener">② فتح محادثة واتساب مع الرقم</a>
-<p style="font-size:.8rem">في واتساب: اضغط 📎 ← «مستند» ← اختر ملف الوثيقة ← إرسال.</p>
-<button class="d" id="cl">إغلاق</button></div></div>
+<div id="fin"><div><h2 style="margin:0;color:var(--pri)">الخطوة الأخيرة: واتساب</h2>
+<p id="fs"></p>
+<a class="btn p" id="wa" target="_blank" rel="noopener">فتح واتساب على الرقم <bdi dir="ltr">01129724884</bdi></a>
+<p style="font-size:.8rem">في المحادثة: اضغط 📎 ← «مستند» ← اختر ملف الوثيقة ← إرسال.</p>
+<button id="ws">حفظ الملف على الجهاز</button><button class="d" id="cl">إغلاق</button></div></div>
 <div id="ask"><div><p id="aq" style="color:var(--tx);font-size:1rem"></p><button class="p" id="ay"></button><button id="an">إلغاء</button></div></div><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -84,7 +83,7 @@ h+=`<section><h2>إقــــــــــــــرار</h2><p style="margin:0 0
 $('f').innerHTML=h;sync()}
 function keys(){const a=['co','ack','date'];B.forEach(b=>b.f.forEach(f=>a.push(b.k+'.'+f[0])));L.forEach(l=>{for(let i=0;i<rows(l);i++)LF.forEach(f=>a.push(l[0]+'.'+i+'.'+f[0]))});return a}
 function sync(){document.querySelectorAll('[data-k]').forEach(e=>e.classList.contains('dt')?setDT(e,S.v[e.dataset.k]):e.value=S.v[e.dataset.k]||'');prog()}
-function prog(){const a=keys(),n=a.filter(k=>V(k)).length;$('cnt').textContent=n+' حقل مملوء من '+a.length;$('pb').style.width=(100*n/a.length)+'%'}
+function prog(){const a=keys(),n=a.filter(k=>V(k)).length;$('cnt').textContent=n+' حقل مملوء من '+a.length;$('pb').style.width=(100*n/a.length)+'%';prep()}
 let tm;function save(){prog();$('sv').textContent='… جارٍ الحفظ';clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));$('sv').textContent='✓ تم الحفظ تلقائياً على جهازك'}catch(e){$('sv').textContent='⚠ تعذر الحفظ في هذا المتصفح'}},300)}
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,2200)}
 function secKeys(k){const l=L.find(x=>x[0]==k);if(l){const a=[];for(let i=0;i<rows(l);i++)LF.forEach(f=>a.push(l[0]+'.'+i+'.'+f[0]));return a}return B.find(b=>b.k==k).f.map(f=>k+'.'+f[0])}
@@ -148,16 +147,23 @@ z.file('word/document.xml',new XMLSerializer().serializeToString(doc));
 return z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'})}
 async function saveFile(blob){try{const d=window.claude&&await claude.use('downloads');if(d){await d.save({filename:FN,data:blob});return 1}}catch(e){if(e&&e.code=='declined')return 0}
 const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=FN;document.body.appendChild(a);a.click();a.remove();return 1}
-let blob,MSG;
-async function go(fin){if(!V('me.name')){toast('من فضلك اكتب الإسم رباعى في بيانات مقدم الطلب');document.querySelector('[data-k="me.name"]').focus();return}
+let CUR,MSG,READY=null,pt;
+function fname(){return 'وثيقة_تعارف_'+V('me.name').replace(/[\\\/:*?"<>|\s]+/g,'_')+'.docx'}
+function prep(){READY=null;clearTimeout(pt);pt=setTimeout(async()=>{try{READY=await makeDocx()}catch(e){}},600)}
+const waURL=()=>'https://wa.me/'+WA+'?text='+encodeURIComponent(MSG);
+function showFin(saved){$('fs').textContent=saved?'✓ تم حفظ الملف على جهازك.':'الملف لم يُحفظ بعد، اضغط «حفظ الملف على الجهاز» أولاً.';$('fin').style.display='flex'}
+async function go(fin){
+if(!V('me.name')){toast('من فضلك اكتب الإسم رباعى في بيانات مقدم الطلب');document.querySelector('[data-k="me.name"]').focus();return}
 const bad=[...document.querySelectorAll('[data-t]')].filter(x=>{chk({target:x});return x.classList.contains('bad')});
 if(bad.length&&!await ask('بعض الأرقام أو التواريخ غير مكتملة (مظللة بالأحمر). هل تريد المتابعة رغم ذلك؟','متابعة')){bad[0].scrollIntoView({block:'center'});(bad[0].querySelector('input')||bad[0]).focus();return}
-try{blob=await makeDocx()}catch(e){toast('تعذر إنشاء الملف');return}
-const nm=V('me.name'),msg='وثيقة تعارف (نموذج رقم 3) - '+nm;FN='وثيقة_تعارف_'+nm.replace(/[\\\/:*?"<>|\s]+/g,'_')+'.docx';
-if(fin){MSG='السلام عليكم\nمرفق وثيقة تعارف (نموذج رقم 3) - '+nm;$('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(MSG);$('ws').textContent='① حفظ الملف / مشاركته';$('ws').classList.add('p');$('wa').classList.remove('p');$('fin').style.display='flex';step1()}else if(await saveFile(blob))toast('تم تجهيز الملف')}
-$('send').onclick=()=>go(1);$('dl').onclick=()=>go(0);$('cl').onclick=()=>$('fin').style.display='none';function done(){$('ws').textContent='✓ تم تجهيز الملف (اضغط للتكرار)';$('ws').classList.remove('p');$('wa').classList.add('p')}
-async function step1(){const file=new File([blob],FN,{type:blob.type}),ok=()=>saveFile(blob).then(r=>r&&done());
-try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:MSG});done()}else await ok()}catch(e){if(e.name!='AbortError')await ok()}}
-$('ws').onclick=step1;
+let b=READY;if(!b){try{b=await makeDocx()}catch(e){toast('تعذر إنشاء الملف');return}}
+CUR=b;FN=fname();MSG='السلام عليكم\nمرفق وثيقة تعارف (نموذج رقم 3) - '+V('me.name');$('wa').href=waURL();
+if(!fin){if(await saveFile(b))toast('تم تجهيز الملف');return}
+const file=new File([b],FN,{type:b.type});
+try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:MSG});toast('تمت المشاركة');return}}catch(e){if(e.name=='AbortError')return}
+const ok=await saveFile(b);let w=null;try{w=window.open(waURL(),'_blank')}catch(e){}
+if(!w||!ok)showFin(ok)}
+$('send').onclick=()=>go(1);$('dl').onclick=()=>go(0);$('cl').onclick=()=>$('fin').style.display='none';
+$('ws').onclick=async()=>{if(CUR&&await saveFile(CUR))showFin(1)};
 build();
 </script></body></html>
