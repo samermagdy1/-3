@@ -47,8 +47,8 @@ button.s{font-size:.8rem;min-height:32px;padding:3px 10px}
 <div class="bar"><i id="pb"></i></div>
 <form id="f" onsubmit="return false" autocomplete="off"></form>
 <div style="text-align:center;margin:16px 0"><button class="d" id="clr">🗑 حذف كل البيانات المحفوظة (مستخدم جديد)</button></div>
-<p style="text-align:center;font-size:.72rem;color:var(--mut)">الإصدار 6 – 29/09/2026</p></main>
-<div class="foot"><small id="hint" hidden style="flex-basis:100%;text-align:center;color:var(--mut);font-size:.8rem">✓ تم حفظ الملف. في واتساب: اضغط 📎 ← «مستند» ← اختر الملف ← إرسال</small><button class="p" id="send">إرسال عبر واتساب</button><a class="btn wa" id="wa" hidden target="_blank" rel="noopener">فتح واتساب ↗</a><button id="dl">تحميل ملف Word</button></div>
+<p style="text-align:center;font-size:.72rem;color:var(--mut)">الإصدار 8 – 29/09/2026</p></main>
+<div class="foot"><small id="hint" hidden style="flex-basis:100%;text-align:center;color:var(--mut);font-size:.8rem">✓ تم تنزيل الملف على جهازك.<br>١) اضغط «فتح واتساب» ٢) اضغط 📎 ثم «مستند» ٣) اختر الملف ثم إرسال</small><button class="p" id="send">إرسال عبر واتساب</button><a class="btn wa" id="wa" hidden target="_blank" rel="noopener">فتح واتساب ↗</a></div>
 
 <div id="ask"><div><p id="aq" style="color:var(--tx);font-size:1rem"></p><button class="p" id="ay"></button><button id="an">إلغاء</button></div></div><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -145,34 +145,56 @@ async function saveFile(blob){try{const d=DL||(window.claude&&await claude.use('
 const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=FN;document.body.appendChild(a);a.click();a.remove();return 1}
 let CUR,MSG,READY=null,pt,saved=false,DL=null;
 function fname(){return 'وثيقة_تعارف_'+V('me.name').replace(/[\\\/:*?"<>|\s]+/g,'_')+'.docx'}
-function prep(){READY=null;saved=false;$('wa').hidden=$('hint').hidden=true;clearTimeout(pt);pt=setTimeout(async()=>{try{READY=await makeDocx()}catch(e){}},600)}
+function prep(){READY=null;saved=false;$('wa').hidden=$('hint').hidden=true;$('send').hidden=false;clearTimeout(pt);pt=setTimeout(async()=>{try{READY=await makeDocx()}catch(e){}},600)}
 const waURL=()=>'https://wa.me/'+WA+'?text='+encodeURIComponent(MSG);
-function afterSave(){saved=true;$('wa').href=waURL();$('wa').hidden=false;$('hint').hidden=false}
-async function go(fin){
-if(fin&&saved){try{window.open(waURL(),'_blank')}catch(e){}return}
+function afterSave(){saved=true;$('wa').href=waURL();$('wa').hidden=false;$('hint').hidden=false;$('send').hidden=true}
+async function go(){
 if(!V('me.name')){toast('من فضلك اكتب الإسم رباعى في بيانات مقدم الطلب');document.querySelector('[data-k="me.name"]').focus();return}
 const bad=[...document.querySelectorAll('[data-t]')].filter(x=>{chk({target:x});return x.classList.contains('bad')});
 if(bad.length&&!await ask('بعض الأرقام أو التواريخ غير مكتملة (مظللة بالأحمر). هل تريد المتابعة رغم ذلك؟','متابعة')){bad[0].scrollIntoView({block:'center'});(bad[0].querySelector('input')||bad[0]).focus();return}
 let b=READY;if(!b){try{b=await makeDocx()}catch(e){toast('تعذر إنشاء الملف');return}}
 CUR=b;FN=fname();MSG='السلام عليكم\nمرفق وثيقة تعارف (نموذج رقم 3) - '+V('me.name');
-if(!fin){if(await saveFile(b)){afterSave();toast('تم حفظ الملف')}return}
-if(await saveFile(b)){afterSave();let w=null;try{w=window.open(waURL(),'_blank')}catch(e){}if(!w)toast('✓ تم حفظ الملف — اضغط «فتح واتساب»')}else toast('لم يتم حفظ الملف')}
-$('send').onclick=()=>go(1);$('dl').onclick=()=>go(0);
+if(await saveFile(b)){afterSave();toast('✓ تم تنزيل الملف')}else toast('لم يتم حفظ الملف')}
+$('send').onclick=go;
 build();
 (async()=>{try{DL=window.claude?await claude.use("downloads"):null}catch(e){}})();
 function fit(){const b=document.body;b.style.zoom="";if(matchMedia("(pointer:coarse)").matches&&screen.width<700&&innerWidth>screen.width*1.3)b.style.zoom=innerWidth/screen.width}fit();addEventListener("resize",fit);
-</script>
-  <script>
-  (function () {
-  let footer = document.querySelector('footer');
-  if (!footer) {
-    footer = document.createElement('footer');
+</script><script>/*!
+ * footer.js — يضيف فوتر "By Eng : Samir Magdy" في أسفل أي صفحة ويب.
+ * الاستخدام: أضف وسم script بالمصدر footer.js في نهاية الصفحة (قبل إغلاق body).
+ */
+(function () {
+  'use strict';
+
+  var ID = 'sm-footer';
+
+  function init() {
+    if (document.getElementById(ID)) return; // منع التكرار
+
+    var css = document.createElement('style');
+    css.textContent =
+      '.sm-footer{box-sizing:border-box;width:100%;margin:24px 0 0;' +
+      'padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px));' +
+      'text-align:center;direction:ltr;unicode-bidi:isolate;' +
+      'font:600 .9rem/1.5 Cairo,system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;' +
+      'color:var(--mut,#667089);border-top:1px solid var(--bd,#d6dbe6)}' +
+      '.sm-footer strong{color:var(--pri,#0f5c4d);font-weight:700}' +
+      '@media (prefers-color-scheme:dark){.sm-footer{color:var(--mut,#98a2bb);' +
+      'border-top-color:var(--bd,#2b3550)}.sm-footer strong{color:var(--pri,#3fbfa4)}}';
+    document.head.appendChild(css);
+
+    var footer = document.createElement('footer');
+    footer.id = ID;
+    footer.className = 'sm-footer';
+    footer.setAttribute('role', 'contentinfo');
+    footer.innerHTML = 'By Eng : <strong>Samir Magdy</strong>';
     document.body.appendChild(footer);
   }
-  footer.textContent = 'By Eng : Samir Magdy';
-  footer.style.cssText =
-    'text-align:center;padding:14px;margin-top:24px;' +
-    'font-family:Cairo,Tahoma,Arial,sans-serif;font-size:14px;' +
-    'color:#64748b;border-top:1px solid #e2e8f0;';
-})(); </script>
-</body></html>
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script></body></html>
